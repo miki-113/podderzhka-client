@@ -600,19 +600,27 @@ jobs:
         run: |
           mv ./SignOutput/rustdesk.msi "./SignOutput/${{ env.filename }}.msi" || echo "rustdesk"
 
+      - name: Sanitize release tag
+        shell: bash
+        run: |
+          FV=$(printf '%s' "${{ env.FULL_VERSION }}" | tr -d '[:space:]' | sed 's#[^A-Za-z0-9._-]##g')
+          [ -z "$FV" ] && FV="1.4.6-1"
+          echo "CLEAN_TAG=$FV" >> "$GITHUB_ENV"
+          echo "clean tag = [$FV]"
+
       - name: Rename release artifacts
         shell: bash
         run: |
           cp "./SignOutput/${{ env.filename }}.exe" \
-             "./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.exe" || true
+             "./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.CLEAN_TAG }}.exe" || true
           cp "./SignOutput/${{ env.filename }}.msi" \
-             "./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.msi" || true
+             "./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.CLEAN_TAG }}.msi" || true
 
       - name: Release
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.FULL_VERSION }}
+          tag_name: ${{ env.CLEAN_TAG }}
           prerelease: true
           files: |
-            ./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.exe
-            ./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.FULL_VERSION }}.msi
+            ./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.CLEAN_TAG }}.exe
+            ./SignOutput/${{ env.filename }}-${{ matrix.job.arch }}-${{ env.CLEAN_TAG }}.msi
