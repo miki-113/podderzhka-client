@@ -65,7 +65,7 @@ env:
   cycleMonitor: "true"
   xOffline: "false"
   removeNewVersionNotif: "true"
-  custom: "eyJjb25uLXR5cGUiOiJpbmNvbWluZyIsImFwcC1uYW1lIjoiUG9kZGVyemhrYSIsIm92ZXJyaWRlLXNldHRpbmdzIjp7ImN1c3RvbS1yZW5kZXp2b3VzLXNlcnZlciI6Ijg3LjEwMy4xNzQuMTUiLCJyZWxheS1zZXJ2ZXIiOiI4Ny4xMDMuMTc0LjE1Iiwia2V5IjoiVEFqdlVFWGU1cEgxRW5qKzYwZHp2cHk2c1EwODBBQldZQ0NmRVM5c05zYz0ifSwiZGVmYXVsdC1zZXR0aW5ncyI6eyJhY2Nlc3MtbW9kZSI6ImN1c3RvbSIsImVuYWJsZS1rZXlib2FyZCI6IlkiLCJlbmFibGUtY2xpcGJvYXJkIjoiWSIsImVuYWJsZS1maWxlLXRyYW5zZmVyIjoiWSIsImVuYWJsZS1hdWRpbyI6IlkiLCJlbmFibGUtdHVubmVsIjoiWSIsImVuYWJsZS1yZW1vdGUtcmVzdGFydCI6IlkiLCJlbmFibGUtcmVjb3JkLXNlc3Npb24iOiJZIiwiZW5hYmxlLWJsb2NrLWlucHV0IjoiWSIsImFsbG93LXJlbW90ZS1jb25maWctbW9kaWZpY2F0aW9uIjoiTiIsImRpcmVjdC1zZXJ2ZXIiOiJOIiwidmVyaWZpY2F0aW9uLW1ldGhvZCI6InVzZS1ib3RoLXBhc3N3b3JkcyIsImFwcHJvdmUtbW9kZSI6InBhc3N3b3JkLWNsaWNrIiwiYWxsb3ctaGlkZS1jbSI6Ik4iLCJhbGxvdy1yZW1vdmUtd2FsbHBhcGVyIjoiWSIsImVuYWJsZS1yZW1vdGUtcHJpbnRlciI6IlkiLCJlbmFibGUtY2FtZXJhIjoiWSIsImVuYWJsZS10ZXJtaW5hbCI6IlkifSwiZW5hYmxlLWxhbi1kaXNjb3ZlcnkiOiJZIiwiYWxsb3ctYXV0by1kaXNjb25uZWN0IjoiTiJ9"
+  custom: "eyJjb25uLXR5cGUiOiJpbmNvbWluZyIsImFwcC1uYW1lIjoiUG9kZGVyemhrYSIsIm92ZXJyaWRlLXNldHRpbmdzIjp7ImN1c3RvbS1yZW5kZXp2b3VzLXNlcnZlciI6Ijg3LjEwMy4xNzQuMTUiLCJyZWxheS1zZXJ2ZXIiOiI4Ny4xMDMuMTc0LjE1Iiwia2V5IjoiVEFqdlVFWGU1cEgxRW5qKzYwZHp2cHk2c1EwODBBQldZQ0NmRVM5c05zYz0ifSwiZGVmYXVsdC1zZXR0aW5ncyI6eyJoaWRlLWhlbHAtY2FyZHMiOiJZIiwiYWNjZXNzLW1vZGUiOiJjdXN0b20iLCJlbmFibGUta2V5Ym9hcmQiOiJZIiwiZW5hYmxlLWNsaXBib2FyZCI6IlkiLCJlbmFibGUtZmlsZS10cmFuc2ZlciI6IlkiLCJlbmFibGUtYXVkaW8iOiJZIiwiZW5hYmxlLXR1bm5lbCI6IlkiLCJlbmFibGUtcmVtb3RlLXJlc3RhcnQiOiJZIiwiZW5hYmxlLXJlY29yZC1zZXNzaW9uIjoiWSIsImVuYWJsZS1ibG9jay1pbnB1dCI6IlkiLCJhbGxvdy1yZW1vdGUtY29uZmlnLW1vZGlmaWNhdGlvbiI6Ik4iLCJkaXJlY3Qtc2VydmVyIjoiTiIsInZlcmlmaWNhdGlvbi1tZXRob2QiOiJ1c2UtYm90aC1wYXNzd29yZHMiLCJhcHByb3ZlLW1vZGUiOiJwYXNzd29yZC1jbGljayIsImFsbG93LWhpZGUtY20iOiJOIiwiYWxsb3ctcmVtb3ZlLXdhbGxwYXBlciI6IlkiLCJlbmFibGUtcmVtb3RlLXByaW50ZXIiOiJZIiwiZW5hYmxlLWNhbWVyYSI6IlkiLCJlbmFibGUtdGVybWluYWwiOiJZIn0sImVuYWJsZS1sYW4tZGlzY292ZXJ5IjoiWSIsImFsbG93LWF1dG8tZGlzY29ubmVjdCI6Ik4ifQ=="
 
 
 jobs:
@@ -242,6 +242,8 @@ jobs:
           sed -i -e 's|rs-cn.rustdesk.com|${{ env.server }}|g' ./libs/hbb_common/src/config.rs
           sed -i -e 's|OeVuKk5nlHiXp+APNn0Y3pC1Iwpwn44JGqrQCsWqmBw=|${{ env.key }}|' ./libs/hbb_common/src/config.rs
           sed -i -e 's|https://admin.rustdesk.com|${{ env.apiServer }}|' ./src/common.rs
+          # убрать красную карточку установки/UAC на портативном клиенте
+          sed -i -e 's|if (isWindows \&\& !bind.isDisableInstallation()) {|if (false) {|' ./flutter/lib/desktop/pages/desktop_home_page.dart
           # ./flutter/pubspec.yaml
           #sed -i '/intl:/a \ \ archive: ^3.6.1' ./flutter/pubspec.yaml
 
