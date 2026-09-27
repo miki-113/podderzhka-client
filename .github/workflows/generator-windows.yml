@@ -50,8 +50,8 @@ env:
   compname: "Podderzhka"
   downloadLink: "https://rustdesk.com/download"
   filename: "podderzhka"
-  key: "TAjvUEXe5pH1Enj+60dzvpy6sQ080ABWYCCfES9sNsc="
-  server: "87.103.174.15"
+  key: "${{ secrets.RD_KEY }}"
+  server: "${{ secrets.RD_SERVER }}"
   urlLink: "https://rustdesk.com"
 
   # Logo
@@ -65,7 +65,7 @@ env:
   cycleMonitor: "true"
   xOffline: "false"
   removeNewVersionNotif: "true"
-  custom: "eyJjb25uLXR5cGUiOiJpbmNvbWluZyIsImFwcC1uYW1lIjoiUG9kZGVyemhrYSIsIm92ZXJyaWRlLXNldHRpbmdzIjp7ImN1c3RvbS1yZW5kZXp2b3VzLXNlcnZlciI6Ijg3LjEwMy4xNzQuMTUiLCJyZWxheS1zZXJ2ZXIiOiI4Ny4xMDMuMTc0LjE1Iiwia2V5IjoiVEFqdlVFWGU1cEgxRW5qKzYwZHp2cHk2c1EwODBBQldZQ0NmRVM5c05zYz0iLCJhbGxvdy1udW1lcmljLW9uZS10aW1lLXBhc3N3b3JkIjoiWSIsImhpZGUtbmV0d29yay1zZXR0aW5ncyI6IlkiLCJoaWRlLXNlcnZlci1zZXR0aW5ncyI6IlkiLCJoaWRlLXNlY3VyaXR5LXNldHRpbmdzIjoiWSIsImhpZGUtcHJveHktc2V0dGluZ3MiOiJZIiwiaGlkZS13ZWJzb2NrZXQtc2V0dGluZ3MiOiJZIiwiaGlkZS1yZW1vdGUtcHJpbnRlci1zZXR0aW5ncyI6IlkiLCJkaXNhYmxlLWNoYW5nZS1pZCI6IlkiLCJhbGxvdy1yZW1vdGUtY29uZmlnLW1vZGlmaWNhdGlvbiI6Ik4ifSwiZGVmYXVsdC1zZXR0aW5ncyI6eyJoaWRlLWhlbHAtY2FyZHMiOiJZIiwiYWNjZXNzLW1vZGUiOiJjdXN0b20iLCJlbmFibGUta2V5Ym9hcmQiOiJZIiwiZW5hYmxlLWNsaXBib2FyZCI6IlkiLCJlbmFibGUtZmlsZS10cmFuc2ZlciI6IlkiLCJlbmFibGUtYXVkaW8iOiJZIiwiZW5hYmxlLXR1bm5lbCI6IlkiLCJlbmFibGUtcmVtb3RlLXJlc3RhcnQiOiJZIiwiZW5hYmxlLXJlY29yZC1zZXNzaW9uIjoiWSIsImVuYWJsZS1ibG9jay1pbnB1dCI6IlkiLCJkaXJlY3Qtc2VydmVyIjoiTiIsInZlcmlmaWNhdGlvbi1tZXRob2QiOiJ1c2UtYm90aC1wYXNzd29yZHMiLCJhcHByb3ZlLW1vZGUiOiJwYXNzd29yZC1jbGljayIsImFsbG93LWhpZGUtY20iOiJOIiwiYWxsb3ctcmVtb3ZlLXdhbGxwYXBlciI6IlkiLCJlbmFibGUtcmVtb3RlLXByaW50ZXIiOiJZIiwiZW5hYmxlLWNhbWVyYSI6IlkiLCJlbmFibGUtdGVybWluYWwiOiJZIn0sImVuYWJsZS1sYW4tZGlzY292ZXJ5IjoiWSIsImFsbG93LWF1dG8tZGlzY29ubmVjdCI6Ik4ifQ=="
+  custom: ""
 
 
 jobs:
@@ -530,8 +530,16 @@ jobs:
 
       - name: Create custom.txt file
         shell: bash
+        env:
+          RD_SERVER: ${{ secrets.RD_SERVER }}
+          RD_KEY: ${{ secrets.RD_KEY }}
         run: |
-          echo -n "${{ env.custom }}" | cat > ./rustdesk/custom_.txt
+          python3 - <<'PYEOF'
+          import base64, os
+          tmpl = '{"conn-type":"incoming","app-name":"Podderzhka","override-settings":{"custom-rendezvous-server":"__SRV__","relay-server":"__SRV__","key":"__KEY__","allow-numeric-one-time-password":"Y","hide-network-settings":"Y","hide-server-settings":"Y","hide-security-settings":"Y","hide-proxy-settings":"Y","hide-websocket-settings":"Y","hide-remote-printer-settings":"Y","disable-change-id":"Y","allow-remote-config-modification":"N"},"default-settings":{"hide-help-cards":"Y","access-mode":"custom","enable-keyboard":"Y","enable-clipboard":"Y","enable-file-transfer":"Y","enable-audio":"Y","enable-tunnel":"Y","enable-remote-restart":"Y","enable-record-session":"Y","enable-block-input":"Y","direct-server":"N","verification-method":"use-both-passwords","approve-mode":"password-click","allow-hide-cm":"N","allow-remove-wallpaper":"Y","enable-remote-printer":"Y","enable-camera":"Y","enable-terminal":"Y"},"enable-lan-discovery":"Y","allow-auto-disconnect":"N"}'
+          s = tmpl.replace("__SRV__", os.environ["RD_SERVER"]).replace("__KEY__", os.environ["RD_KEY"])
+          open("./rustdesk/custom_.txt","w").write(base64.b64encode(s.encode()).decode())
+          PYEOF
 
       - name: Build self-extracted executable
         shell: bash
